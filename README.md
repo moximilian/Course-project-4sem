@@ -14,3 +14,5 @@
 `python version1_0.py BOOKS_PATH BD_APTH`
 
 Пример использования в labBooksDetails.ipynb
+
+Путь к папке и путь к БД не должен иметь киррилицу!!!
