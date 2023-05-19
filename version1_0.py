@@ -77,13 +77,11 @@ class Book:
                 first_name = soup.find('first-name').string
                 last_name = soup.find('last-name').string
                 self.author = ' '.join([first_name,last_name])
-                # self.author = ' '.join([author if x not in author.text else '' for author in soup.find_all('author') ])
                 self.year = soup.date.text.split('-')[0] if soup.date else ''
                 self.pages = len(soup.find_all('section'))
         else:
             print(Fore.RED + 'Проскочила не электронная книжка')
             flag = True
-            #raise Exception(f'Unknown extension: {ext}')
         if flag == False:
             return self.title
     
@@ -104,13 +102,6 @@ class Book:
                 text = [para.get_text() for para in soup.find_all('p')]
                 d = ' '.join(text)
                 self.content+= d
-            # print(self.content)
-            """
-            for doc in book.get_items():
-                if doc.get_type() == ebooklib.ITEM_DOCUMENT:
-                    soup = BeautifulSoup(doc.content, 'html.parser')
-                    self.content += str(soup)
-                    """
         elif ext.lower() == '.txt':
             with open (self.path, 'rb') as f:
                 block = f.read(5000)
@@ -128,8 +119,7 @@ class Book:
                 soup = BeautifulSoup(fb2, 'xml')
                 sections = [section.text for section in soup.body.find_all('section')]
                 self.content = '\n\n'.join(sections)
-        #else:
-            #raise Exception(f'Unknown extension: {ext}')
+
 
     def extract_cover(self):
         """Extract cover image from the book"""
@@ -137,12 +127,10 @@ class Book:
         if ext.lower() == '.pdf':
             doc = fitz.open(self.path)
             page = doc.load_page(0)
-            # image_list = page.getImageList()
             for image_index, img in enumerate(page.get_images()):
                 xref = img[0]
                 base_image = doc.extract_image(xref)
                 image_bytes = base_image["image"]
-                # image_ext = base_image["ext"]
                 self.cover = Image.open(io.BytesIO(image_bytes))
                 break
         elif ext.lower() == '.epub':
@@ -159,8 +147,6 @@ class Book:
             stream = io.BytesIO(binary)
             image = Image.open(stream)
             self.cover = image
-        #else:
-            #raise Exception(f'Unknown extension: {ext}')
 
     def calculate_hash(self):
         """Calculate SHA256 hash of the book file"""
@@ -203,10 +189,6 @@ class Book:
         """Generate preview image (first page screenshot)"""
         _, ext = os.path.splitext(self.path)
         if ext.lower() == '.pdf':
-            """with fitz.open(self.path) as pdf:
-                pix = pdf[0].get_pixmap()
-                fmt = 'JPEG' if pix.colorspace == fitz.PIX_COLORSPACE_RGB else 'PNG'
-                preview = Image.open(BytesIO(pix.get_buffer(fmt)))"""
             preview = self.cover
         elif ext.lower() == '.epub':
             book = epub.read_epub(self.path)
@@ -226,8 +208,6 @@ class Book:
             stream = io.BytesIO(binary)
             image = Image.open(stream)
             preview = image
-        #else:
-            #raise Exception(f'Unknown extension: {ext}')
 
         preview.save(preview_path)
         print(Fore.YELLOW + f'Для книги {self.path} создано превью тут: {preview_path}')
