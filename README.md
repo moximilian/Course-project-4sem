@@ -9,9 +9,9 @@
 
 Для запуска через консоль:
 
-`cd PROJECT_PATH`
+`$ cd PROJECT_PATH`
 
-`python version1_0.py BOOKS_PATH BD_APTH`
+`$ python version1_0.py BOOKS_PATH BD_APTH`
 
 Пример использования в labBooksDetails.ipynb
 
