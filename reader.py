@@ -10,7 +10,7 @@ import argparse
 
 
 def process_book(path, database_path):
-    """Process single book and save its information to SQLite database"""
+    """Обрабатывает одну книгу и сохранет информацию о ней в базу данных"""
     book = Book(path)
     try:
         book.extract_metadata()
@@ -21,11 +21,11 @@ def process_book(path, database_path):
         preview_path = os.path.splitext(path)[0] + '.jpg'
         book.generate_preview(preview_path)
     except Exception as e:
-        print(f'Error processing file {path}: {e}')
+        print(f'Ошибка получения данных из файла: {path}: {e}')
 
 
 def process_folder(folder_path, database_path):
-    """Process all books in the given folder and its subfolders"""
+    """Обрабатывает целую папку с книгами"""
 
     for root, dirs, files in os.walk(folder_path):
         for file in files:
@@ -44,7 +44,7 @@ def check_repeated_path(books, item):
         return indexes
 
 def check_repeated_books(folder_path):
-    """Process all books in the given folder and its subfolders"""
+    """Проверяет повторяющиеся книги в разных папках"""
     books = []
     repeated_dirs = []
     for root, dirs, files in os.walk(folder_path):
@@ -74,14 +74,15 @@ def main():
 
     warnings.filterwarnings("ignore")
 
-    parser = argparse.ArgumentParser(description='Process books and save their information to SQLite database')
-    parser.add_argument('folder_path', metavar='FOLDER_PATH', help='Path to folder with the books')
-    parser.add_argument('database_path', metavar='DATABASE_PATH', help='Path to SQLite database file')
+    parser = argparse.ArgumentParser(prog = 'Инструмент исследования данных из файлов с книгами \n',description='Сохраняяет все книги в SQL базу, вытаскивая все мета данные',epilog='(c) Максим Сыров 211-361', )
+    parser.add_argument('folder_path', metavar='FOLDER_PATH', help='Путь к папке с книгами')
+    parser.add_argument('database_path', metavar='DATABASE_PATH', help='Путь к файлу базы данных')
+
     args = None
     try:
         args,unknown = parser.parse_known_args()
     except argparse.ArgumentError as e:
-        print(f'Argument error: {e}')
+        print(f'Ошибка аргументов {e}')
         return
 
     process_folder(args.folder_path, args.database_path)

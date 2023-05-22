@@ -32,7 +32,7 @@ class Book:
         return f'{self.title} by {self.author} ({self.year}, {self.pages} pages)'
 
     def extract_metadata(self):
-        """Extract metadata from the book (title, author, year, pages)"""
+        """Достать метаданные о книге (title, author, year, pages)"""
         flag = False
         _, ext = os.path.splitext(self.path)
         self.ext = ext
@@ -87,7 +87,7 @@ class Book:
     
     
     def extract_content(self):
-        """Extract text content from the book"""
+        """Достать текст книги"""
         _, ext = os.path.splitext(self.path)
         if ext.lower() == '.pdf':
             with fitz.open(self.path) as pdf:
@@ -122,7 +122,7 @@ class Book:
 
 
     def extract_cover(self):
-        """Extract cover image from the book"""
+        """Достать обложку книги"""
         _, ext = os.path.splitext(self.path)
         if ext.lower() == '.pdf':
             doc = fitz.open(self.path)
@@ -149,12 +149,12 @@ class Book:
             self.cover = image
 
     def calculate_hash(self):
-        """Calculate SHA256 hash of the book file"""
+        """Калькулятор SHA256 хэша книги"""
         with open(self.path, 'rb') as file:
             content = file.read()
             self.file_hash = hashlib.sha256(content).hexdigest()
     def save_to_database(self, database_path):
-        """Save book information to SQLite database"""
+        """Сохранeние книги в базу данных"""
         conn = sqlite3.connect(database_path)
         cursor = conn.cursor()
         cursor.execute('CREATE TABLE IF NOT EXISTS books (id INTEGER PRIMARY KEY, title TEXT, author TEXT, year TEXT, ext VARCHAR(4) , pages INTEGER, cover BLOB, content VARCHAR(65535), file_hash TEXT)')
