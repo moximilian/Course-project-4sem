@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Инструмент работы с книгами</title>
+  </head>
+  <body>
+    <main>
+      <header>
+        Ваша библиотека
+      </header>
+      <form action='/submit'  method="GET" class = 'form'>
+        <label name = "name" class = 'header'></label>
+        <input type="search" name="text" id="" placeholder = "Название или автор книги"/>
+        <select name="ext">
+          <option id="any">any</option>
+          <option id="pdf">pdf</option>
+          <option id="epub">epub</option>
+          <option id="txt">txt</option>
+          <option id="fb2">fb2</option>
+        </select>
+        <button type="submit">Поиск</button>
+      </form>
+      <div class="content">
+        
+        <label class = 'heading'>Книги</label>
+        <div class = 'naming'>
+          {% if texting%}
+              {{title}}
+          {% endif %}
+        </div>
+        <div class = 'book_container'> 
+        {% for book in my_list %}
+          <div class = 'book'>
+            {% if book|length == 7%}
+            <img src="data:image/jpeg;base64,{{book[6]}}"/>
+            {% else %}
+            <img src="{{ url_for('static', filename='No_Cover.jpg') }}"/>
+            {% endif %}
+            <div class = 'text_bold'><a href='/submit?show_text={{book[1]}}&ext={{book[4]}}'>{{book[1]}}</a></div>
+            <div class = 'text'>{{book[2]}}</div>
+            <div class = 'text'>{{book[3]}}</div>
+            <div class = 'text'>{{book[4]}}</div>
+            
+          </div>
+        {% endfor %}
+        </div>
+      </div>
+      <div class = 'texting'>
+        {% if texting%}
+            {{texting}}
+        {% endif %}
+      </div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+body {
+    margin: 0;
+    font-family: Verdana;
+    background-color: rgb(233, 236, 236);
+    justify-content: center;
+}
+.form{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+img{
+    height:250px;
+}
