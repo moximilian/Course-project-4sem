@@ -13,6 +13,7 @@ import PyPDF2
 from bs4 import BeautifulSoup
 import ebookmeta
 from colorama import Style, Back, Fore
+from datetime import datetime
 
 class Book_epub:
     def __init__(self, path):
@@ -70,29 +71,35 @@ class Book_epub:
         """Сохранeние книги в базу данных"""
         conn = sqlite3.connect(database_path)
         cursor = conn.cursor()
-        cursor.execute('CREATE TABLE IF NOT EXISTS books_epub (id INTEGER PRIMARY KEY, title TEXT, author TEXT, year TEXT, ext VARCHAR(4) , cover BLOB, content TEXT, file_hash TEXT)')
+        #CREATE TABLE IF NOT EXISTS books (id INTEGER PRIMARY KEY,path TEXT, title TEXT, author TEXT, year TEXT, ext VARCHAR(4) , cover BLOB, content TEXT, file_hash TEXT,date_add DATETIME)
+        cursor.execute('CREATE TABLE IF NOT EXISTS books_epub (id INTEGER PRIMARY KEY,path TEXT, title TEXT, author TEXT, year TEXT, ext VARCHAR(4) , cover BLOB, content TEXT, file_hash TEXT,date_add DATETIME)')
 
         cursor.execute('SELECT id,title FROM books_epub WHERE file_hash = ?', (self.file_hash,))
         result = cursor.fetchone()
+        date_add = datetime.date(datetime.now())
         if result:
             """Обновление данных в Базе данных"""
             if self.cover:
                 with BytesIO() as cover_buffer:
                     self.cover.save(cover_buffer, format='PNG')
                     cover_data = cover_buffer.getvalue()
-                cursor.execute('UPDATE books_epub SET title = ?, author = ?, year = ?, ext = ?,  cover = ?, content = ? WHERE id = ?',(self.title, self.author, self.year, self.ext,  cover_data, self.content, result[0]))
+                cursor.execute('UPDATE books_epub SET path=?, title = ?, author = ?, year = ?, ext = ?,  cover = ?, content = ? WHERE id = ?',(self.path, self.title, self.author, self.year, self.ext,  cover_data, self.content, result[0]))
             else:
-                cursor.execute('UPDATE books_epub SET title = ?, author = ?, year = ?, ext = ?,  content = ? WHERE id = ?',(self.title, self.author, self.year, self.ext,  self.content, result[0]))
+                cursor.execute('UPDATE books_epub SET path=?, title = ?, author = ?, year = ?, ext = ?,  content = ? WHERE id = ?',(self.path, self.title, self.author, self.year, self.ext,  self.content, result[0]))
 
             print(Fore.CYAN +f'Произошло обновление книги "{result[1]}"')
+            conn.commit()
+            cursor.close()
+            conn.close()
             return
-        if self.cover:
+        elif self.cover:
             with BytesIO() as cover_buffer:
                 self.cover.save(cover_buffer, format='PNG')
                 cover_data = cover_buffer.getvalue()
-            cursor.execute('INSERT INTO books_epub (title, author, year, ext,  cover, content, file_hash) VALUES (?, ?, ?, ?,  ?, ?, ?)', (self.title, self.author, self.year, self.ext,  cover_data, self.content, self.file_hash))
+            #INSERT INTO books_epub (path, title, author, year, ext, content, file_hash,date_add) VALUES ('D:/', 'Книга', 'Автор', '2023', 'epub',  'Текст книги', '12345678','2023-06-22')
+            cursor.execute('INSERT INTO books_epub (path, title, author, year, ext,  cover, content, file_hash,date_add) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)', (self.path, self.title, self.author, self.year, self.ext,  cover_data, self.content, self.file_hash,date_add))
         else:
-            cursor.execute('INSERT INTO books_epub (title, author, year, ext, content, file_hash) VALUES (?, ?, ?, ?,  ?, ?)', (self.title, self.author, self.year, self.ext,  self.content, self.file_hash))
+            cursor.execute('INSERT INTO books_epub (path, title, author, year, ext, content, file_hash,date_add) VALUES (?, ?, ?, ?, ?,  ?, ?,?)', (self.path, self.title, self.author, self.year, self.ext,  self.content, self.file_hash,date_add))
         conn.commit()
         cursor.close()
         conn.close()
@@ -113,7 +120,6 @@ class Book_epub:
         preview.save(preview_path)
         print(Fore.YELLOW + f'Для книги {self.path} создано превью тут: {preview_path}')
 
-# разделить на классы, добавить метаданные
 class Book_pdf:
     def __init__(self, path):
         self.path = path
@@ -174,29 +180,33 @@ class Book_pdf:
         """Сохранeние книги в базу данных"""
         conn = sqlite3.connect(database_path)
         cursor = conn.cursor()
-        cursor.execute('CREATE TABLE IF NOT EXISTS books_pdf (id INTEGER PRIMARY KEY, title TEXT, author TEXT, year TEXT, ext VARCHAR(4) , pages INTEGER, cover BLOB, content TEXT, file_hash TEXT)')
+        cursor.execute('CREATE TABLE IF NOT EXISTS books_pdf (id INTEGER PRIMARY KEY,path TEXT, title TEXT, author TEXT, year TEXT, ext VARCHAR(4) , pages INTEGER, cover BLOB, content TEXT, file_hash TEXT, date_add DATETIME)')
 
         cursor.execute('SELECT id,title FROM books_pdf WHERE file_hash = ?', (self.file_hash,))
         result = cursor.fetchone()
+        date_add = datetime.date(datetime.now())
         if result:
             """Обновление данных в Базе данных"""
             if self.cover:
                 with BytesIO() as cover_buffer:
                     self.cover.save(cover_buffer, format='PNG')
                     cover_data = cover_buffer.getvalue()
-                cursor.execute('UPDATE books_pdf SET title = ?, author = ?, year = ?, ext = ?, pages = ?, cover = ?, content = ? WHERE id = ?',(self.title, self.author, self.year, self.ext, self.pages, cover_data, self.content, result[0]))
+                cursor.execute('UPDATE books_pdf SET path=?, title = ?, author = ?, year = ?, ext = ?, pages = ?, cover = ?, content = ? WHERE id = ?',(self.path, self.title, self.author, self.year, self.ext, self.pages, cover_data, self.content, result[0]))
             else:
-                cursor.execute('UPDATE books_pdf SET title = ?, author = ?, year = ?, ext = ?, pages = ?, content = ? WHERE id = ?',(self.title, self.author, self.year, self.ext, self.pages, self.content, result[0]))
+                cursor.execute('UPDATE books_pdf SET path=?, title = ?, author = ?, year = ?, ext = ?, pages = ?, content = ? WHERE id = ?',(self.path, self.title, self.author, self.year, self.ext, self.pages, self.content, result[0]))
 
             print(Fore.CYAN +f'Произошло обновление книги "{result[1]}"')
+            conn.commit()
+            cursor.close()
+            conn.close()
             return
-        if self.cover:
+        elif self.cover:
             with BytesIO() as cover_buffer:
                 self.cover.save(cover_buffer, format='PNG')
                 cover_data = cover_buffer.getvalue()
-            cursor.execute('INSERT INTO books_pdf (title, author, year, ext, pages, cover, content, file_hash) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (self.title, self.author, self.year, self.ext, self.pages, cover_data, self.content, self.file_hash))
+            cursor.execute('INSERT INTO books_pdf (path, title, author, year, ext, pages, cover, content, file_hash,date_add) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)', (self.path, self.title, self.author, self.year, self.ext, self.pages, cover_data, self.content, self.file_hash,date_add))
         else:
-            cursor.execute('INSERT INTO books_pdf (title, author, year, ext, pages, content, file_hash) VALUES (?, ?, ?, ?, ?, ?, ?)', (self.title, self.author, self.year, self.ext, self.pages, self.content, self.file_hash))
+            cursor.execute('INSERT INTO books_pdf (path, title, author, year, ext, pages, content, file_hash,date_add) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)', (self.path, self.title, self.author, self.year, self.ext, self.pages, self.content, self.file_hash,date_add))
         conn.commit()
         cursor.close()
         conn.close()
@@ -207,7 +217,6 @@ class Book_pdf:
         preview = self.cover
         preview.save(preview_path)
         print(Fore.YELLOW + f'Для книги {self.path} создано превью тут: {preview_path}')
-
 
 class Book_txt:
     def __init__(self, path):
@@ -260,24 +269,26 @@ class Book_txt:
         """Сохранeние книги в базу данных"""
         conn = sqlite3.connect(database_path)
         cursor = conn.cursor()
-        cursor.execute('CREATE TABLE IF NOT EXISTS books_txt (id INTEGER PRIMARY KEY, title TEXT, author TEXT, year TEXT, ext VARCHAR(4) , pages INTEGER, content TEXT, file_hash TEXT)')
+        cursor.execute('CREATE TABLE IF NOT EXISTS books_txt (id INTEGER PRIMARY KEY, path TEXT, title TEXT, author TEXT, year TEXT, ext VARCHAR(4) , pages INTEGER, content TEXT, file_hash TEXT,date_add DATETIME)')
 
-        cursor.execute('SELECT id,title FROM books_txt WHERE file_hash = ?', (self.file_hash,))
+        cursor.execute('SELECT id,path,title FROM books_txt WHERE file_hash = ?', (self.file_hash,))
         result = cursor.fetchone()
+        date_add = datetime.date(datetime.now())
         if result:
             """Обновление данных в Базе данных"""
-            cursor.execute('UPDATE books_txt SET title = ?, author = ?, year = ?, ext = ?, pages = ?, content = ? WHERE id = ?',(self.title, self.author, self.year, self.ext, self.pages, self.content, result[0]))
+            cursor.execute('UPDATE books_txt SET path = ?, title = ?, author = ?, year = ?, ext = ?, pages = ?, content = ? WHERE id = ?',(self.path,self.title, self.author, self.year, self.ext, self.pages, self.content, result[0]))
 
             print(Fore.CYAN +f'Произошло обновление книги "{result[1]}"')
+            conn.commit()
+            cursor.close()
+            conn.close()
             return
-        else: cursor.execute('INSERT INTO books_txt (title, author, year, ext, pages, content, file_hash) VALUES (?, ?, ?, ?, ?, ?, ?)', (self.title, self.author, self.year, self.ext, self.pages, self.content, self.file_hash))
+        else: cursor.execute('INSERT INTO books_txt (path,title, author, year, ext, pages, content, file_hash,date_add) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?)', (self.path, self.title, self.author, self.year, self.ext, self.pages, self.content, self.file_hash,date_add))
         
         conn.commit()
         cursor.close()
         conn.close()
         print(Fore.YELLOW +f'Книга, путь которой {self.path} сохранена в базу данных books_txt')
-
-
 
 class Book_fb2:
     def __init__(self, path):
@@ -346,29 +357,34 @@ class Book_fb2:
         """Сохранeние книги в базу данных"""
         conn = sqlite3.connect(database_path)
         cursor = conn.cursor()
-        cursor.execute('CREATE TABLE IF NOT EXISTS books_fb2 (id INTEGER PRIMARY KEY, title TEXT, author TEXT, year TEXT, ext VARCHAR(4) , pages INTEGER, cover BLOB, content TEXT, file_hash TEXT)')
+        cursor.execute('CREATE TABLE IF NOT EXISTS books_fb2 (id INTEGER PRIMARY KEY,path TEXT, title TEXT, author TEXT, year TEXT, ext VARCHAR(4) , pages INTEGER, cover BLOB, content TEXT, file_hash TEXT, date_add DATETIME)')
 
         cursor.execute('SELECT id,title FROM books_fb2 WHERE file_hash = ?', (self.file_hash,))
         result = cursor.fetchone()
+        date_add = datetime.date(datetime.now())
+
         if result:
             """Обновление данных в Базе данных"""
             if self.cover:
                 with BytesIO() as cover_buffer:
                     self.cover.save(cover_buffer, format='PNG')
                     cover_data = cover_buffer.getvalue()
-                cursor.execute('UPDATE books_fb2 SET title = ?, author = ?, year = ?, ext = ?, pages = ?, cover = ?, content = ? WHERE id = ?',(self.title, self.author, self.year, self.ext, self.pages, cover_data, self.content, result[0]))
+                cursor.execute('UPDATE books_fb2 SET path=?, title = ?, author = ?, year = ?, ext = ?, pages = ?, cover = ?, content = ? WHERE id = ?',(self.path, self.title, self.author, self.year, self.ext, self.pages, cover_data, self.content, result[0]))
             else:
-                cursor.execute('UPDATE books_fb2 SET title = ?, author = ?, year = ?, ext = ?, pages = ?, content = ? WHERE id = ?',(self.title, self.author, self.year, self.ext, self.pages, self.content, result[0]))
+                cursor.execute('UPDATE books_fb2 SET path = ?, title = ?, author = ?, year = ?, ext = ?, pages = ?, content = ? WHERE id = ?',(self.path, self.title, self.author, self.year, self.ext, self.pages, self.content, result[0]))
 
             print(Fore.CYAN +f'Произошло обновление книги "{result[1]}"')
+            conn.commit()
+            cursor.close()
+            conn.close()
             return
-        if self.cover:
+        elif self.cover:
             with BytesIO() as cover_buffer:
                 self.cover.save(cover_buffer, format='PNG')
                 cover_data = cover_buffer.getvalue()
-            cursor.execute('INSERT INTO books_fb2 (title, author, year, ext, pages, cover, content, file_hash) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (self.title, self.author, self.year, self.ext, self.pages, cover_data, self.content, self.file_hash))
+            cursor.execute('INSERT INTO books_fb2 (path, title, author, year, ext, pages, cover, content, file_hash,date_add) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (self.path, self.title, self.author, self.year, self.ext, self.pages, cover_data, self.content, self.file_hash,date_add))
         else:
-            cursor.execute('INSERT INTO books_fb2 (title, author, year, ext, pages, content, file_hash) VALUES (?, ?, ?, ?, ?, ?, ?)', (self.title, self.author, self.year, self.ext, self.pages, self.content, self.file_hash))
+            cursor.execute('INSERT INTO books_fb2 (path, title, author, year, ext, pages, content, file_hash,date_add) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', (self.path, self.title, self.author, self.year, self.ext, self.pages, self.content, self.file_hash,date_add))
         conn.commit()
         cursor.close()
         conn.close()

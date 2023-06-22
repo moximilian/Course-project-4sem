@@ -4,7 +4,7 @@ from collections import Counter
 import sqlite3
 from colorama import Style, Back, Fore
 import warnings
-import forms
+
 import argparse
 
 
@@ -63,7 +63,9 @@ def process_book(path, database_path):
 
 def process_folder(folder_path, database_path):
     """Обрабатывает целую папку с книгами"""
-
+    folder_path = str(folder_path)
+    print(folder_path,database_path)
+    import os
     for root, dirs, files in os.walk(folder_path):
         for file in files:
             _, ext = os.path.splitext(file)
@@ -141,55 +143,67 @@ def check_repeated_books(folder_path):
             print(Back.BLACK + Fore.MAGENTA +f"Книга '{book[0]}' {result}")
             printed.append(book[0])
                 
+def start_web_server(database_path):
+    import forms
+    forms.main(database_path)
 
 
 
 
-def main():
+parser = argparse.ArgumentParser()
+subparsers = parser.add_subparsers()
 
-    warnings.filterwarnings("ignore")
+# Команда для определения повторяющихся файлов
+is_repeated_parser = subparsers.add_parser('check_repeated_books')
+is_repeated_parser.add_argument('folger_path', help='Путь к папке с книгами')
 
-    # parser = argparse.ArgumentParser(prog = 'Инструмент исследования данных из файлов с книгами \n',description='Сохраняяет все книги в SQL базу, вытаскивая все мета данные',epilog='(c) Максим Сыров 211-361', )
-    # parser.add_argument('folder_path', metavar='FOLDER_PATH', help='Путь к папке с книгами')
-    # parser.add_argument('database_path', metavar='DATABASE_PATH', help='Путь к файлу базы данных')
+# Команда для обработки папки в бд
+process_all_parser = subparsers.add_parser('process_folder')
+process_all_parser.add_argument('folger_path2', help='Путь к папке с книгами')
+process_all_parser.add_argument('database_path', help='Путь к бд с книгами')
 
-    # args = None
-    # try:
-    #     args,unknown = parser.parse_known_args()
-    # except argparse.ArgumentError as e:
-    #     print(f'Ошибка аргументов {e}')
-    #     return
 
-    # check_repeated_books(args.folder_path)
-    # #process_folder(args.folder_path, args.database_path)
-
-    # forms.main(args.database_path)
-    # #print(args.database_path)
-    
-    parser = argparse.ArgumentParser(description="My parser")
-    parser.add_argument("folder_path", help="Description of positional argument")
-    parser.add_argument("database_path", help="Description of positional argument")
-    parser.add_argument("-o", "--optional_argument", help="Description of optional argument")
-
-    # Parse the arguments
-    args = parser.parse_args()
-    
-    # Use the parsed arguments
-    positional_arg_1 = args.folder_path
-    positional_arg_2 = args.database_path
-    optional_arg = args.optional_argument
-    
-    # Print the values of the arguments
-    check_repeated_books(positional_arg_1)
-    process_folder(positional_arg_1, positional_arg_2)
-    
-    
-    if optional_arg==None: print('!')
-    else:forms.main(optional_arg)
-    print("Value of positional argument:", positional_arg_1)
-    print("Value of positional argument:", positional_arg_2)
-    print("Value of optional argument:", type(optional_arg))
-
+# Команда для запуска веб приложения
+web_start_parser = subparsers.add_parser('start_web_server')
+web_start_parser.add_argument('database_path2', help='Путь к бд с книгами')
 
 if __name__ == '__main__':
-    main()
+    args = parser.parse_args()
+    if hasattr(args, 'folger_path'): 
+        check_repeated_books(args.folger_path)
+    if hasattr(args, 'folger_path2') and hasattr(args, 'database_path'):
+        process_folder(args.folger_path2,args.database_path)
+    if hasattr(args, 'database_path2'): 
+        start_web_server(args.database_path2)
+
+# def main():
+
+#     warnings.filterwarnings("ignore")
+
+    
+    
+    # parser = argparse.ArgumentParser(description="My parser")
+    # parser.add_argument("folder_path", help="Путь к папке с всеми книгами")
+    # parser.add_argument("database_path", help="Путь к базе данных")
+    # parser.add_argument("-o", "--optional_argument", help="Указать путь к базе данных откуда будет запущен сервер")
+
+    # # Parse the arguments
+    # args = parser.parse_args()
+    
+    # # Use the parsed arguments
+    # positional_arg_1 = args.folder_path
+    # positional_arg_2 = args.database_path
+    # optional_arg = args.optional_argument
+    
+    # # Print the values of the arguments
+    # check_repeated_books(positional_arg_1)
+    # process_folder(positional_arg_1, positional_arg_2)
+    
+    # import forms
+    # if optional_arg==None: print('!')
+    # else:forms.main(optional_arg)
+    # print("Value of positional argument:", positional_arg_1)
+    # print("Value of positional argument:", positional_arg_2)
+    # print("Value of optional argument:", type(optional_arg))
+
+

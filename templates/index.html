@@ -4,56 +4,122 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
     <title>Инструмент работы с книгами</title>
   </head>
   <body>
     <main>
-      <header>
-        Ваша библиотека
-      </header>
-      <form action='/submit'  method="GET" class = 'form'>
-        <label name = "name" class = 'header'></label>
-        <input type="search" name="text" id="" placeholder = "Название или автор книги"/>
-        <select name="ext">
-          <option id="any">any</option>
-          <option id="pdf">pdf</option>
-          <option id="epub">epub</option>
-          <option id="txt">txt</option>
-          <option id="fb2">fb2</option>
-        </select>
-        <button type="submit">Поиск</button>
+      <header>Ваша библиотека</header>
+      <form action="/submit" method="GET" class="form">
+        <label name="name" class="header"></label>
+        <div class="year_container">
+          <input
+            type="search"
+            name="text"
+            id=""
+            placeholder="Название или автор"
+          />
+          <select name="ext">
+            <option id="any">any</option>
+            <option id="pdf">pdf</option>
+            <option id="epub">epub</option>
+            <option id="txt">txt</option>
+            <option id="fb2">fb2</option>
+          </select>
+        </div>
+        <div class="year_container">
+          <input
+            type="range"
+            value="{{year}}"
+            min="1900"
+            max="2023"
+            step="1"
+            name="year"
+            id="inputt"
+            class="text"
+          />
+          <output id="value"></output>
+        </div>
+
+        <div class="year_container">
+          Дата добавления
+          <input type="date" id="current_date" name="add_date" />
+          <script>
+            function resetDate() {
+              document.getElementById("current_date").value = "";
+              flag = false;
+            }
+          </script>
+          <button onclick="resetDate()" class="btn_reset">Сбросить дату</button>
+        </div>
+        <script>
+          if flag!=false{
+            var date = new Date();
+            var currentDate = date.toISOString().substring(0,10);
+            document.getElementById("current_date").value = currentDate;
+          }
+        </script>
+        <script>
+          const value = document.querySelector("#value");
+          const input = document.querySelector("#inputt");
+          value.textContent = input.value;
+          input.addEventListener("input", (event) => {
+            value.textContent = event.target.value;
+          });
+        </script>
+        
+          <button class="btn_submit" type="submit">Поиск</button>
+        
       </form>
       <div class="content">
-        
-        <label class = 'heading'>Книги</label>
-        <div class = 'naming'>
-          {% if texting%}
-              {{title}}
+        <div class="authors">
+          Авторы<br />
+          {% if authors%}
+          <select placeholder="Список Авторов">
+            {% for author in authors %}
+            <option id="{{author}}">{{author}}</option>
+            {% endfor %}
+          </select>
           {% endif %}
         </div>
-        <div class = 'book_container'> 
-        {% for book in my_list %}
-          <div class = 'book'>
-            {% if book|length == 7%}
-            <img src="data:image/jpeg;base64,{{book[6]}}"/>
+        <label class="heading">Книги</label>
+        <div class="naming">{% if texting%} {{title}} {% endif %}</div>
+        <div class="book_container">
+          {% for book in my_list %}
+          <div class="book">
+            {% if book|length == 8%}
+            <img src="data:image/jpeg;base64,{{book[7]}}" />
             {% else %}
-            <img src="{{ url_for('static', filename='No_Cover.jpg') }}"/>
+            <img src="{{ url_for('static', filename='No_Cover.jpg') }}" />
             {% endif %}
-            <div class = 'text_bold'><a href='/submit?show_text={{book[1]}}&ext={{book[4]}}'>{{book[1]}}</a></div>
-            <div class = 'text'>{{book[2]}}</div>
-            <div class = 'text'>{{book[3]}}</div>
-            <div class = 'text'>{{book[4]}}</div>
             
+            <div class="text_bold">
+              <a href="/submit?show_text={{book[2]}}&ext={{book[5]}}"
+                >{{book[2]}}</a
+              >
+            </div>
+            <div class="text">{{book[3]}}</div>
+            <div class="text">{{book[4]}}</div>
+            <div class="text">{{book[5]}}</div>
+            <a
+              class="download"
+              href="/download?book_path={{book[1]}}"
+              target="_blank"
+              >Скачать</a
+            >
           </div>
-        {% endfor %}
+          {% endfor %}
         </div>
       </div>
-      <div class = 'texting'>
-        {% if texting%}
-            {{texting}}
-        {% endif %}
-      </div>
+      <div class="texting">{% if texting%} {{texting}} {% endif %}</div>
+      <span class="page_number">
+        {% for page in page_n %}
+        <a href="/submit?page={{page}}&year={{year}}">{{page}}</a>
+        {% endfor %}
+      </span>
     </main>
   </body>
 </html>

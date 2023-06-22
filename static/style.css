@@ -26,6 +26,13 @@ header{
     gap:22px;
     justify-content: center;
     text-align: center;
+    align-items: center;
+}
+.year_container{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    gap:5px;
 }
 img{
 
@@ -36,7 +43,7 @@ img{
     border-radius: 12px;
 }
 input,select{
-    width:225px;
+    /* width:200px; */
     padding-top:5px;
     padding-bottom: 5px;
     border-radius: 12px;
@@ -49,7 +56,7 @@ input{
 select{
     padding-right:7px;
 }
-button{
+.btn_reset{
     width:225px;
     padding-top:5px;
     padding-bottom: 5px;
@@ -58,7 +65,20 @@ button{
     background-color: rgb(0, 110, 212);
     border:none
 }
-.button:hover{
+.btn_reset:hover{
+    background-color: rgb(75, 154, 227);
+}
+.btn_submit{
+    width:225px;
+    /* padding-top:5px;
+    padding-bottom: 5px; */
+    height:50px;
+    border-radius: 12px;
+    color: white;
+    background-color: rgb(0, 110, 212);
+    border:3px solid white;
+}
+.btn_submit:hover{
     background-color: rgb(75, 154, 227);
 }
 .content{
@@ -72,6 +92,13 @@ button{
     text-align: center;
     font-size: 22px;
     font-weight: 600;
+}
+.authors{
+    margin-left:16px;
+    margin-top:15px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 400;
 }
 .book_container{
     display: flex;  
@@ -97,6 +124,13 @@ button{
     font-size: calc(100% - 5px);
     text-align: center;
 }
+.download{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    font-size:10px;
+}
 .text_bold{
     padding-top:5px;
     padding-bottom: 2px;
@@ -108,11 +142,21 @@ button{
 
     padding-left: 16px;
     padding-right:16px;
-    margin-bottom: 100px;
+
     text-align: justify;
 }
 .naming{
     text-align: center;
     font-size: 14px;
     font-weight: 600;
+}
+.page_number{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    margin-bottom: 100px;
+}
+#inputt{
+    width:
 }
