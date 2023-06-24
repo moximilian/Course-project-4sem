@@ -10,9 +10,27 @@
     />
     <title>Инструмент работы с книгами</title>
   </head>
-  <body>
+
+  <body id="all" data-theme="light">
+    <header>
+      <script>
+        let theme = localStorage.getItem("theme") || "light";
+        const allElement = document.getElementById("all");
+        function setTheme() {
+          const newTheme = theme === "light" ? "dark" : "light";
+          theme = newTheme;
+          localStorage.setItem("theme", newTheme);
+          allElement.setAttribute("data-theme", newTheme);
+        }
+      </script>
+      <span class="header_container">
+        <button class="btn-theme" onclick="setTheme()">
+          <div class="theme-icon"></div>
+        </button>
+        <span class="naming">Ваша библиотека</span>
+      </span>
+    </header>
     <main>
-      <header>Ваша библиотека</header>
       <form action="/submit" method="GET" class="form">
         <label name="name" class="header"></label>
         <div class="year_container">
@@ -30,7 +48,20 @@
             <option id="fb2">fb2</option>
           </select>
         </div>
+        <div class="year_container_row">
+          <input type="radio" id="True" name="include_fav" value="True" />
+          <label for="True">Избранное</label>
+          <input
+            type="radio"
+            id="False"
+            name="include_fav"
+            value="False"
+            checked
+          />
+          <label for="False">Все</label>
+        </div>
         <div class="year_container">
+          Год издания
           <input
             type="range"
             value="{{year}}"
@@ -42,37 +73,63 @@
             class="text"
           />
           <output id="value"></output>
+          <script>
+            const value = document.querySelector("#value");
+            const input = document.querySelector("#inputt");
+            value.textContent = input.value;
+            input.addEventListener("input", (event) => {
+              value.textContent = event.target.value;
+            });
+          </script>
         </div>
 
         <div class="year_container">
           Дата добавления
-          <input type="date" id="current_date" name="add_date" />
+          <input
+            type="range"
+            value="{{add_date}}"
+            min="0"
+            max="10"
+            step="1"
+            name="add_date"
+            id="add_date"
+            class="text"
+          />
+          <div id="add_date_output">5 дней назад</div>
           <script>
-            function resetDate() {
-              document.getElementById("current_date").value = "";
-              flag = false;
-            }
+            const value_1 = document.querySelector("#add_date_output");
+            const input_1 = document.querySelector("#add_date");
+            value_1.textContent = "за " + input_1.value + " дней";
+            input_1.addEventListener("input", (event) => {
+              value_1.textContent = "за " + event.target.value + " дней";
+            });
           </script>
-          <button onclick="resetDate()" class="btn_reset">Сбросить дату</button>
         </div>
+
+        <div class="year_container">
+          <input type="hidden" name="page" value="1" />
+          Книг на странице
+          <select name="books_page">
+            <option id="option3">3</option>
+            <option id="option4">4</option>
+            <option id="option5">5</option>
+            <option id="option6">6</option>
+            <option id="option7">7</option>
+            <option id="option8">8</option>
+            <option id="option9">9</option>
+            <option id="option10">10</option>
+          </select>
+        </div>
+        <button class="btn_submit" id="btn_submit" type="submit">Поиск</button>
         <script>
-          if flag!=false{
-            var date = new Date();
-            var currentDate = date.toISOString().substring(0,10);
-            document.getElementById("current_date").value = currentDate;
-          }
-        </script>
-        <script>
-          const value = document.querySelector("#value");
-          const input = document.querySelector("#inputt");
-          value.textContent = input.value;
-          input.addEventListener("input", (event) => {
-            value.textContent = event.target.value;
+          document.addEventListener("DOMContentLoaded", function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const books_page = urlParams.get("books_page");
+            const option_class = "#option" + books_page;
+            const option = document.querySelector(option_class);
+            option.selected = true;
           });
         </script>
-        
-          <button class="btn_submit" type="submit">Поиск</button>
-        
       </form>
       <div class="content">
         <div class="authors">
@@ -90,12 +147,34 @@
         <div class="book_container">
           {% for book in my_list %}
           <div class="book">
-            {% if book|length == 8%}
-            <img src="data:image/jpeg;base64,{{book[7]}}" />
+            <a
+              href="/submit?page={{page}}&year=2023&books_page={{books_page}}&add_date=10&text={{name}}&id={{book[0]}}&ext={{book[5]}}&include_fav=False"
+            >
+              {% if book|length == 10%} {% if book[9] == "True" %}
+              <img class="star_icon" src="../static/star.png" />
+              {% else %}
+              <img class="star_icon" src="../static/empty_star.png" />
+              {% endif %} {% else %} {% if book[8] == "True" %}
+              <img
+                class="star_icon"
+                src="{{ url_for('static', filename='star.png') }}"
+              />
+              {% else %}
+              <img
+                class="star_icon"
+                src="{{ url_for('static', filename='empty_star.png') }}"
+              />
+              {% endif %} {% endif %}
+            </a>
+
+            {% if book|length == 10%}
+            <img class="book_img" src="data:image/jpeg;base64,{{book[7]}}" />
             {% else %}
-            <img src="{{ url_for('static', filename='No_Cover.jpg') }}" />
+            <img
+              class="book_img"
+              src="{{ url_for('static', filename='No_Cover.jpg') }}"
+            />
             {% endif %}
-            
             <div class="text_bold">
               <a href="/submit?show_text={{book[2]}}&ext={{book[5]}}"
                 >{{book[2]}}</a
@@ -108,18 +187,22 @@
               class="download"
               href="/download?book_path={{book[1]}}"
               target="_blank"
-              >Скачать</a
+              >Скачать {% if book|length == 10%} ({{book[8]}}) {% else %}
+              ({{book[7]}}) {% endif %}</a
             >
           </div>
           {% endfor %}
         </div>
+        <div class="texting">{% if texting%} {{texting}} {% endif %}</div>
+        <span class="page_number">
+          {% for page in page_n %}
+          <a
+            href="/submit?page={{page}}&year={{year}}&books_page={{books_page}}&add_date={{add_date}}&text={{name}}&include_fav={{include_fav}}"
+            >{{page}}</a
+          >
+          {% endfor %}
+        </span>
       </div>
-      <div class="texting">{% if texting%} {{texting}} {% endif %}</div>
-      <span class="page_number">
-        {% for page in page_n %}
-        <a href="/submit?page={{page}}&year={{year}}">{{page}}</a>
-        {% endfor %}
-      </span>
     </main>
   </body>
 </html>

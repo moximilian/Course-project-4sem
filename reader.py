@@ -3,7 +3,6 @@ from version1_0 import Book_pdf,Book_epub,Book_fb2,Book_txt
 from collections import Counter
 import sqlite3
 from colorama import Style, Back, Fore
-import warnings
 
 import argparse
 
@@ -175,35 +174,3 @@ if __name__ == '__main__':
         process_folder(args.folger_path2,args.database_path)
     if hasattr(args, 'database_path2'): 
         start_web_server(args.database_path2)
-
-# def main():
-
-#     warnings.filterwarnings("ignore")
-
-    
-    
-    # parser = argparse.ArgumentParser(description="My parser")
-    # parser.add_argument("folder_path", help="Путь к папке с всеми книгами")
-    # parser.add_argument("database_path", help="Путь к базе данных")
-    # parser.add_argument("-o", "--optional_argument", help="Указать путь к базе данных откуда будет запущен сервер")
-
-    # # Parse the arguments
-    # args = parser.parse_args()
-    
-    # # Use the parsed arguments
-    # positional_arg_1 = args.folder_path
-    # positional_arg_2 = args.database_path
-    # optional_arg = args.optional_argument
-    
-    # # Print the values of the arguments
-    # check_repeated_books(positional_arg_1)
-    # process_folder(positional_arg_1, positional_arg_2)
-    
-    # import forms
-    # if optional_arg==None: print('!')
-    # else:forms.main(optional_arg)
-    # print("Value of positional argument:", positional_arg_1)
-    # print("Value of positional argument:", positional_arg_2)
-    # print("Value of optional argument:", type(optional_arg))
-
-

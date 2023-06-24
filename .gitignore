@@ -1,0 +1,8 @@
+*.js
+*.json
+*.ps1
+*.yml
+*.ts
+*.cmd
+*.md
+*LICENSE

@@ -14,7 +14,21 @@ from bs4 import BeautifulSoup
 import ebookmeta
 from colorama import Style, Back, Fore
 from datetime import datetime
-
+def pretty_size(file_path:str)->str:
+        size_bytes = os.path.getsize(file_path)
+        sizing = ['bits', 'KB', 'MB', 'GB', 'TB']
+        result = ''
+        i = 0
+        while True: 
+            if len(str(size_bytes))>0 and len(str(size_bytes)) <= 5:
+                result = str(size_bytes) +' '+ sizing[i]
+                break
+            i+=1
+            size_bytes = round(size_bytes / 1024,1)
+            result = str(size_bytes) +' '+ sizing[i]
+            if len(str(size_bytes))>0 and len(str(size_bytes)) <= 5:
+                break
+        return result
 class Book_epub:
     def __init__(self, path):
         self.path = path
@@ -40,6 +54,7 @@ class Book_epub:
             self.title = metadata('DC','title')[0][0]
             self.year = metadata('DC','date')[0][0]
         return self.title
+    
     
     
     def extract_content(self):
@@ -71,8 +86,9 @@ class Book_epub:
         """Сохранeние книги в базу данных"""
         conn = sqlite3.connect(database_path)
         cursor = conn.cursor()
+        size = pretty_size(self.path)
         #CREATE TABLE IF NOT EXISTS books (id INTEGER PRIMARY KEY,path TEXT, title TEXT, author TEXT, year TEXT, ext VARCHAR(4) , cover BLOB, content TEXT, file_hash TEXT,date_add DATETIME)
-        cursor.execute('CREATE TABLE IF NOT EXISTS books_epub (id INTEGER PRIMARY KEY,path TEXT, title TEXT, author TEXT, year TEXT, ext VARCHAR(4) , cover BLOB, content TEXT, file_hash TEXT,date_add DATETIME)')
+        cursor.execute('CREATE TABLE IF NOT EXISTS books_epub (id INTEGER PRIMARY KEY,path TEXT, title TEXT, author TEXT, year TEXT, ext VARCHAR(4) , cover BLOB, content TEXT, file_hash TEXT,date_add DATETIME, size TEXT,fav TEXT)')
 
         cursor.execute('SELECT id,title FROM books_epub WHERE file_hash = ?', (self.file_hash,))
         result = cursor.fetchone()
@@ -97,9 +113,9 @@ class Book_epub:
                 self.cover.save(cover_buffer, format='PNG')
                 cover_data = cover_buffer.getvalue()
             #INSERT INTO books_epub (path, title, author, year, ext, content, file_hash,date_add) VALUES ('D:/', 'Книга', 'Автор', '2023', 'epub',  'Текст книги', '12345678','2023-06-22')
-            cursor.execute('INSERT INTO books_epub (path, title, author, year, ext,  cover, content, file_hash,date_add) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)', (self.path, self.title, self.author, self.year, self.ext,  cover_data, self.content, self.file_hash,date_add))
+            cursor.execute('INSERT INTO books_epub (path, title, author, year, ext,  cover, content, file_hash,date_add,size) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?,?)', (self.path, self.title, self.author, self.year, self.ext,  cover_data, self.content, self.file_hash,date_add,size))
         else:
-            cursor.execute('INSERT INTO books_epub (path, title, author, year, ext, content, file_hash,date_add) VALUES (?, ?, ?, ?, ?,  ?, ?,?)', (self.path, self.title, self.author, self.year, self.ext,  self.content, self.file_hash,date_add))
+            cursor.execute('INSERT INTO books_epub (path, title, author, year, ext, content, file_hash,date_add,size) VALUES (?, ?, ?, ?, ?,  ?, ?,?,?)', (self.path, self.title, self.author, self.year, self.ext,  self.content, self.file_hash,date_add,size))
         conn.commit()
         cursor.close()
         conn.close()
@@ -180,7 +196,8 @@ class Book_pdf:
         """Сохранeние книги в базу данных"""
         conn = sqlite3.connect(database_path)
         cursor = conn.cursor()
-        cursor.execute('CREATE TABLE IF NOT EXISTS books_pdf (id INTEGER PRIMARY KEY,path TEXT, title TEXT, author TEXT, year TEXT, ext VARCHAR(4) , pages INTEGER, cover BLOB, content TEXT, file_hash TEXT, date_add DATETIME)')
+        size = pretty_size(self.path)
+        cursor.execute('CREATE TABLE IF NOT EXISTS books_pdf (id INTEGER PRIMARY KEY,path TEXT, title TEXT, author TEXT, year TEXT, ext VARCHAR(4) , pages INTEGER, cover BLOB, content TEXT, file_hash TEXT, date_add DATETIME,size TEXT,fav TEXT)')
 
         cursor.execute('SELECT id,title FROM books_pdf WHERE file_hash = ?', (self.file_hash,))
         result = cursor.fetchone()
@@ -204,9 +221,9 @@ class Book_pdf:
             with BytesIO() as cover_buffer:
                 self.cover.save(cover_buffer, format='PNG')
                 cover_data = cover_buffer.getvalue()
-            cursor.execute('INSERT INTO books_pdf (path, title, author, year, ext, pages, cover, content, file_hash,date_add) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)', (self.path, self.title, self.author, self.year, self.ext, self.pages, cover_data, self.content, self.file_hash,date_add))
+            cursor.execute('INSERT INTO books_pdf (path, title, author, year, ext, pages, cover, content, file_hash,date_add,size) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)', (self.path, self.title, self.author, self.year, self.ext, self.pages, cover_data, self.content, self.file_hash,date_add,size))
         else:
-            cursor.execute('INSERT INTO books_pdf (path, title, author, year, ext, pages, content, file_hash,date_add) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)', (self.path, self.title, self.author, self.year, self.ext, self.pages, self.content, self.file_hash,date_add))
+            cursor.execute('INSERT INTO books_pdf (path, title, author, year, ext, pages, content, file_hash,date_add,size) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?,?)', (self.path, self.title, self.author, self.year, self.ext, self.pages, self.content, self.file_hash,date_add,size))
         conn.commit()
         cursor.close()
         conn.close()
@@ -269,7 +286,8 @@ class Book_txt:
         """Сохранeние книги в базу данных"""
         conn = sqlite3.connect(database_path)
         cursor = conn.cursor()
-        cursor.execute('CREATE TABLE IF NOT EXISTS books_txt (id INTEGER PRIMARY KEY, path TEXT, title TEXT, author TEXT, year TEXT, ext VARCHAR(4) , pages INTEGER, content TEXT, file_hash TEXT,date_add DATETIME)')
+        size = pretty_size(self.path)
+        cursor.execute('CREATE TABLE IF NOT EXISTS books_txt (id INTEGER PRIMARY KEY, path TEXT, title TEXT, author TEXT, year TEXT, ext VARCHAR(4) , pages INTEGER, content TEXT, file_hash TEXT,date_add DATETIME,size TEXT,fav TEXT)')
 
         cursor.execute('SELECT id,path,title FROM books_txt WHERE file_hash = ?', (self.file_hash,))
         result = cursor.fetchone()
@@ -283,7 +301,7 @@ class Book_txt:
             cursor.close()
             conn.close()
             return
-        else: cursor.execute('INSERT INTO books_txt (path,title, author, year, ext, pages, content, file_hash,date_add) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?)', (self.path, self.title, self.author, self.year, self.ext, self.pages, self.content, self.file_hash,date_add))
+        else: cursor.execute('INSERT INTO books_txt (path,title, author, year, ext, pages, content, file_hash,date_add,size) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?,?)', (self.path, self.title, self.author, self.year, self.ext, self.pages, self.content, self.file_hash,date_add,size))
         
         conn.commit()
         cursor.close()
@@ -357,7 +375,8 @@ class Book_fb2:
         """Сохранeние книги в базу данных"""
         conn = sqlite3.connect(database_path)
         cursor = conn.cursor()
-        cursor.execute('CREATE TABLE IF NOT EXISTS books_fb2 (id INTEGER PRIMARY KEY,path TEXT, title TEXT, author TEXT, year TEXT, ext VARCHAR(4) , pages INTEGER, cover BLOB, content TEXT, file_hash TEXT, date_add DATETIME)')
+        size = pretty_size(self.path)
+        cursor.execute('CREATE TABLE IF NOT EXISTS books_fb2 (id INTEGER PRIMARY KEY,path TEXT, title TEXT, author TEXT, year TEXT, ext VARCHAR(4) , pages INTEGER, cover BLOB, content TEXT, file_hash TEXT, date_add DATETIME,size TEXT,fav TEXT)')
 
         cursor.execute('SELECT id,title FROM books_fb2 WHERE file_hash = ?', (self.file_hash,))
         result = cursor.fetchone()
@@ -382,9 +401,9 @@ class Book_fb2:
             with BytesIO() as cover_buffer:
                 self.cover.save(cover_buffer, format='PNG')
                 cover_data = cover_buffer.getvalue()
-            cursor.execute('INSERT INTO books_fb2 (path, title, author, year, ext, pages, cover, content, file_hash,date_add) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (self.path, self.title, self.author, self.year, self.ext, self.pages, cover_data, self.content, self.file_hash,date_add))
+            cursor.execute('INSERT INTO books_fb2 (path, title, author, year, ext, pages, cover, content, file_hash,date_add,size) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)', (self.path, self.title, self.author, self.year, self.ext, self.pages, cover_data, self.content, self.file_hash,date_add,size))
         else:
-            cursor.execute('INSERT INTO books_fb2 (path, title, author, year, ext, pages, content, file_hash,date_add) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', (self.path, self.title, self.author, self.year, self.ext, self.pages, self.content, self.file_hash,date_add))
+            cursor.execute('INSERT INTO books_fb2 (path, title, author, year, ext, pages, content, file_hash,date_add,size) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)', (self.path, self.title, self.author, self.year, self.ext, self.pages, self.content, self.file_hash,date_add,size))
         conn.commit()
         cursor.close()
         conn.close()
