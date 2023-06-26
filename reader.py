@@ -172,10 +172,7 @@ def start_all():
     
     t3 = threading.Thread(target = start_web_server)
     t3.start()
-    
 
-    
-    
     t1.join()
     t2.join()
     t3.join()
