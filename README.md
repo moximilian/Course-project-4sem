@@ -3,6 +3,11 @@
 Группа 211-361  
 
 **Методы:**  
+ВНИМАНИЕ: **Папка с Вашими книгами копируется в папку репозитория**  
+
+Запустить всё:  
+- `$ python version1_0.py start_all ANY_TEXT`
+
 Проверить на повтор книги в папке:  
 - `$ python version1_0.py check_repeated_books BOOKS_PATH`
 
