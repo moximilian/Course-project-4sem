@@ -21,7 +21,6 @@ app = Flask(__name__, template_folder='templates')
 """
 database = 'here'
 def main(databse_path = "D:\\test\\database2.db"):
-    print('!!!')
     global database
     database = databse_path
     print(database)
@@ -166,10 +165,10 @@ def get_data_from_db(database, to_search, extension,add_date:str = '3', max_year
                 s[7] = base_64
             result.append(s)
             
-    print(type(books_page))
+    # print(type(books_page))
     count_of_books_on_page = books_page
-    print(count_of_books_on_page)
-    print(count_of_books_on_page)
+    # print(count_of_books_on_page)
+    # print(count_of_books_on_page)
     all_pages = math.ceil(len(result)/count_of_books_on_page)
     
     
@@ -248,6 +247,7 @@ def submit():
         text = get_text_from_book(database, show_text,extension)
         return render_template('index.html', extension = database, texting = text,title = show_text)
     if select_page:
+        print(extension)
         extension='any'
         result_array,all_pages,whole_array = get_data_from_db(database, title, extension,add_date, max_year, select_page,books_page,include_fav)
         # pages_to_select = [x for x in range(1,all_pages+1)]
@@ -259,13 +259,13 @@ def submit():
     author_list = [x[0] for x in whole_array]
     author_set = set(author_list)
     pages_to_select = [x for x in range(1,all_pages+1)]
-    return render_template('index.html',page = select_page,include_fav = include_fav,add_date= add_date,books_page = books_page,year = max_year, name=title, extension = database, my_list = result_array,page_n=pages_to_select,authors = author_set)
+    return render_template('index.html',page = select_page,include_fav = include_fav,add_date= add_date,books_page = books_page,year = max_year, name=title, extension = extension, my_list = result_array,page_n=pages_to_select,authors = author_set)
 
 if __name__ == '__main__':
     #eneble during prod
-    # database_path = sys.argv[1]
+    database_path = sys.argv[1]
     # main()
-    database_path = "D:\\test\\database8.db "
+    # database_path = "D:\\test\\database8.db "
     #database = "D:\\test\\database2.db "
     main(database_path)
     #app.run(debug=True)

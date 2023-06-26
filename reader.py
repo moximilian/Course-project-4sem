@@ -3,7 +3,7 @@ from version1_0 import Book_pdf,Book_epub,Book_fb2,Book_txt
 from collections import Counter
 import sqlite3
 from colorama import Style, Back, Fore
-
+import threading
 import argparse
 
 
@@ -60,10 +60,10 @@ def process_book(path, database_path):
                 print(f'Ошибка получения данных из файла: {path}: {e}')
 
 
-def process_folder(folder_path, database_path):
+def process_folder(folder_path, database_path = './database_temp.db'):
     """Обрабатывает целую папку с книгами"""
     folder_path = str(folder_path)
-    print(folder_path,database_path)
+    # print(folder_path,database_path)
     import os
     for root, dirs, files in os.walk(folder_path):
         for file in files:
@@ -142,15 +142,52 @@ def check_repeated_books(folder_path):
             print(Back.BLACK + Fore.MAGENTA +f"Книга '{book[0]}' {result}")
             printed.append(book[0])
                 
-def start_web_server(database_path):
+def start_web_server(database_path = './database_temp.db'):
     import forms
-    forms.main(database_path)
+    try:
+        forms.main(database_path)
+    except Exception as e:
+        print(F"Working database — {database_path}")
+    
 
+def start_all():
+    folder_path = ''
+    for root,dirs,files in os.walk('.'):
+        for file in files:
+            if 'git' in root:continue
+            if 'node' in root:continue
+            ext = file.split('.')[1] 
+            if  len(file.split('.')) != 3 and  ext in ['epub','pdf','txt','fb2']:
+                folder_path = root
+                break
+        if folder_path == root:
+            break
+        
+    t1 = threading.Thread(target = check_repeated_books, args=(folder_path,))
+    t2 = threading.Thread(target = process_folder, args=(folder_path,))
 
+    t1.start()
+    t2.start()
+    
+    
+    t3 = threading.Thread(target = start_web_server)
+    t3.start()
+    
+
+    
+    
+    t1.join()
+    t2.join()
+    t3.join()
+    
 
 
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers()
+
+# Команда для автоматического старта всей программы
+start_all_parser = subparsers.add_parser('start_all')
+start_all_parser.add_argument('start', help='Напишите "Вперед! "')
 
 # Команда для определения повторяющихся файлов
 is_repeated_parser = subparsers.add_parser('check_repeated_books')
@@ -168,6 +205,9 @@ web_start_parser.add_argument('database_path2', help='Путь к бд с кни
 
 if __name__ == '__main__':
     args = parser.parse_args()
+    if hasattr(args, 'start'): 
+        start_all()
+    
     if hasattr(args, 'folger_path'): 
         check_repeated_books(args.folger_path)
     if hasattr(args, 'folger_path2') and hasattr(args, 'database_path'):
