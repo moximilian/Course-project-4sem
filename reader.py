@@ -157,7 +157,7 @@ def start_all():
             if 'git' in root:continue
             if 'node' in root:continue
             ext = file.split('.')[1] 
-            if  len(file.split('.')) != 3 and  ext in ['epub','pdf','txt','fb2']:
+            if  len(file.split('.')) != 3 and  ext in ['epub','pdf','txt','fb2'] and 'my_books' not in root:
                 folder_path = root
                 break
         if folder_path == root:
