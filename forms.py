@@ -187,7 +187,7 @@ def get_data_from_db(database, to_search, extension,add_date:str = '3', max_year
     return (result,all_pages,whole_array)
 def get_text_from_book(database,book,ext):
     db_name = database
-    print(book)
+    # print(book)
     db = sqlite3.connect(db_name)
     cur = db.cursor()
     extension =  ext[1:]
@@ -254,13 +254,13 @@ def submit():
         text = get_text_from_book(database, show_text,extension)
         return render_template('index.html', extension = database, texting = text,title = show_text)
     if select_page:
-        print(extension)
+        # print(extension)
         extension='any'
         result_array,all_pages,whole_array = get_data_from_db(database, title, extension,add_date, max_year, select_page,books_page,include_fav)
         # pages_to_select = [x for x in range(1,all_pages+1)]
         # return render_template('index.html', name=title, extension = database, my_list = result_array,page_n=pages_to_select)
     else: 
-        print(f"{title=},{extension=},{add_date=},{max_year=},{books_page=},{include_fav=}")
+        # print(f"{title=},{extension=},{add_date=},{max_year=},{books_page=},{include_fav=}")
         result_array,all_pages,whole_array = get_data_from_db(database = database, to_search = title, extension = extension, add_date = add_date, max_year = max_year,books_page = books_page,include_fav = include_fav)
     
     author_list = [x[0] for x in whole_array]
