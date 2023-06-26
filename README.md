@@ -3,14 +3,19 @@
 Группа 211-361  
 
 **Методы:**  
+ВНИМАНИЕ: **Папка с Вашими книгами копируется в папку репозитория**  
+
+Запустить всё:  
+- `$ python reader.py start_all ANY_TEXT`
+
 Проверить на повтор книги в папке:  
-- `$ python version1_0.py check_repeated_books BOOKS_PATH`
+- `$ python reader.py check_repeated_books BOOKS_PATH`
 
 Распарсить книги и добавить их в бд:  
-- `$ python version1_0.py process_folder BOOKS_PATH DATABASE_PATH`
+- `$ python reader.py process_folder BOOKS_PATH DATABASE_PATH`
 
 Запустить веб-приложение с фильтрами в браузере:  
-- `$ python version1_0.py start_web_server DATABASE_PATH`
+- `$ python reader.py start_web_server DATABASE_PATH`
 
 _Примечание_  
   Пути к папкам и файлам на латинице  
