@@ -4,6 +4,8 @@ import sqlite3
 import sys
 from datetime import datetime,timedelta
 import math
+
+from waitress import serve
 app = Flask(__name__, template_folder='templates')
 """
 Заполнение полей из GET запроса DONE (где необходимо)
@@ -25,8 +27,11 @@ def main(databse_path = "D:\\test\\database2.db"):
     database = databse_path
     print(database)
     # app.run(debug=True)
-    from waitress import serve
-    serve(app, host="0.0.0.0", port=8080)
+    
+    serve(app, host="localhost", port=8080)
+
+
+    print('web-server runs corrrectly')
 def get_data_from_db(database, to_search, extension,add_date:str = '3', max_year = 2023, selected_page = 1,books_page = 3,include_fav = ''):
     db_name = database
     db = sqlite3.connect(db_name)
