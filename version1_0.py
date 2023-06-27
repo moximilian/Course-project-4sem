@@ -81,7 +81,16 @@ class Book_epub:
         with open(self.path, 'rb') as file:
             content = file.read()
             self.file_hash = hashlib.sha256(content).hexdigest()
-            
+    
+    def create_db(self,database_path):
+        conn = sqlite3.connect(database_path)
+        cursor = conn.cursor()
+        size = pretty_size(self.path)
+        cursor.execute('CREATE TABLE IF NOT EXISTS books_epub (id INTEGER PRIMARY KEY,path TEXT, title TEXT, author TEXT, year TEXT, ext VARCHAR(4) , pages INTEGER, cover BLOB, content TEXT, file_hash TEXT, date_add DATETIME,size TEXT,fav TEXT)') 
+        conn.commit()
+        cursor.close()
+        conn.close()
+    
     def save_to_database(self, database_path):
         """Сохранeние книги в базу данных"""
         conn = sqlite3.connect(database_path)
@@ -191,7 +200,14 @@ class Book_pdf:
         with open(self.path, 'rb') as file:
             content = file.read()
             self.file_hash = hashlib.sha256(content).hexdigest()
-            
+    def create_db(self,database_path):
+        conn = sqlite3.connect(database_path)
+        cursor = conn.cursor()
+        size = pretty_size(self.path)
+        cursor.execute('CREATE TABLE IF NOT EXISTS books_pdf (id INTEGER PRIMARY KEY,path TEXT, title TEXT, author TEXT, year TEXT, ext VARCHAR(4) , pages INTEGER, cover BLOB, content TEXT, file_hash TEXT, date_add DATETIME,size TEXT,fav TEXT)') 
+        conn.commit()
+        cursor.close()
+        conn.close()
     def save_to_database(self, database_path):
         """Сохранeние книги в базу данных"""
         conn = sqlite3.connect(database_path)
@@ -281,7 +297,15 @@ class Book_txt:
         with open(self.path, 'rb') as file:
             content = file.read()
             self.file_hash = hashlib.sha256(content).hexdigest()
-    
+    def create_db(self,database_path):
+        conn = sqlite3.connect(database_path)
+        cursor = conn.cursor()
+        size = pretty_size(self.path)
+        cursor.execute('CREATE TABLE IF NOT EXISTS books_txt (id INTEGER PRIMARY KEY, path TEXT, title TEXT, author TEXT, year TEXT, ext VARCHAR(4) , pages INTEGER, content TEXT, file_hash TEXT,date_add DATETIME,size TEXT,fav TEXT)')
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
     def save_to_database(self, database_path):
         """Сохранeние книги в базу данных"""
         conn = sqlite3.connect(database_path)
@@ -370,7 +394,15 @@ class Book_fb2:
         with open(self.path, 'rb') as file:
             content = file.read()
             self.file_hash = hashlib.sha256(content).hexdigest()
-            
+    
+    def create_db(self,database_path):
+        conn = sqlite3.connect(database_path)
+        cursor = conn.cursor()
+        size = pretty_size(self.path)
+        cursor.execute('CREATE TABLE IF NOT EXISTS books_fb2 (id INTEGER PRIMARY KEY,path TEXT, title TEXT, author TEXT, year TEXT, ext VARCHAR(4) , pages INTEGER, cover BLOB, content TEXT, file_hash TEXT, date_add DATETIME,size TEXT,fav TEXT)') 
+        conn.commit()
+        cursor.close()
+        conn.close()
     def save_to_database(self, database_path):
         """Сохранeние книги в базу данных"""
         conn = sqlite3.connect(database_path)

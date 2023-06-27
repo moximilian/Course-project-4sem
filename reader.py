@@ -12,10 +12,19 @@ import argparse
 def process_book(path, database_path):
     """Обрабатывает одну книгу и сохранет информацию о ней в базу данных"""
     _, ext = os.path.splitext(path)
+    book = Book_pdf(path)
+    book.create_db(database_path)
+    book = Book_epub(path)
+    book.create_db(database_path)
+    book = Book_fb2(path)
+    book.create_db(database_path)
+    book = Book_txt(path)
+    book.create_db(database_path)
     match ext:
         case ".pdf":
             book = Book_pdf(path)
             try:
+                
                 book.extract_metadata()
                 book.extract_content()
                 book.calculate_hash()
