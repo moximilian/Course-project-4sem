@@ -6,7 +6,7 @@ _"Инструмент исследования книг"_
 **Перед установкой необходимо проверить следующие python модули у себя на компьютере:**
 - Flask
 - base2048
-- SQLite3-0611_(sqlite3)_
+- SQLite3-0611 _(sqlite3)_
 - datetime2
 - math22
 - waitress
@@ -17,7 +17,7 @@ _"Инструмент исследования книг"_
 - chardet2
 - micropython-hashlib5
 - Pillow
-- PyMuPDF_(fitz)_
+- PyMuPDF _(fitz)_
 - EbookLib
 - pypdf
 - bs4
