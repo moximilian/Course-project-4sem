@@ -171,7 +171,8 @@ def start_all():
                 break
         if folder_path == root:
             break
-        
+    if folder_path =='':
+        return "Нет папки с книгами"
     t1 = threading.Thread(target = check_repeated_books, args=(folder_path,))
     t2 = threading.Thread(target = process_folder, args=(folder_path,))
 

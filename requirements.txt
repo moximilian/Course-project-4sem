@@ -1,0 +1,16 @@
+Flask
+base2048
+pysqlite3 
+DateTime
+python-math
+waitress
+colorama
+argparse
+chardet
+Pillow
+PyMuPDF
+EbookLib
+pypdf
+bs4
+ebookmeta
+thread6

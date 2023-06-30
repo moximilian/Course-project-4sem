@@ -3,29 +3,12 @@ _"Инструмент исследования книг"_
 Выполнил Сыров Максим Евгеньевич  
 Группа 211-361  
 
-**Перед установкой необходимо проверить следующие python модули у себя на компьютере:**
-- Flask
-- base2048/base64
-- pysqlite3 
-- datetime2
-- math22
-- waitress
-- collections2
-- colorama
-- threading2
-- argparse3
-- chardet2
-- micropython-hashlib5
-- Pillow
-- PyMuPDF _(fitz)_
-- EbookLib
-- pypdf
-- bs4
-- ebookmeta
+**Перед запуском необходимо:**  
+- `$ pip install -r requirements.txt`  
+- **Скопировать папку с книгами в папку репозитория**   
 
-**Методы:**  
-ВНИМАНИЕ: **Папка с Вашими книгами копируется в папку репозитория**  
-
+**МЕТОДЫ:**  
+ 
 Запустить всё:  
 - `$ python reader.py start_all ANY_TEXT`
   - http://localhost:8080/
